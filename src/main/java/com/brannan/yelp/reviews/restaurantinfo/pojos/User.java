@@ -10,6 +10,14 @@ public class User {
 	private String image_url;
 	private String name;
 
+	private String joyLikelihood;
+	private String sorrowLikelihood;
+	private String angerLikelihood;
+	private String surpriseLikelihood;
+	private String underExposedLikelihood;
+	private String blurredLikelihood;
+	private String headwearLikelihood;
+
 	public String getId() {
 		return id;
 	}
@@ -40,6 +48,62 @@ public class User {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getJoyLikelihood() {
+		return joyLikelihood;
+	}
+
+	public void setJoyLikelihood(String joyLikelihood) {
+		this.joyLikelihood = joyLikelihood;
+	}
+
+	public String getSorrowLikelihood() {
+		return sorrowLikelihood;
+	}
+
+	public void setSorrowLikelihood(String sorrowLikelihood) {
+		this.sorrowLikelihood = sorrowLikelihood;
+	}
+
+	public String getAngerLikelihood() {
+		return angerLikelihood;
+	}
+
+	public void setAngerLikelihood(String angerLikelihood) {
+		this.angerLikelihood = angerLikelihood;
+	}
+
+	public String getSurpriseLikelihood() {
+		return surpriseLikelihood;
+	}
+
+	public void setSurpriseLikelihood(String surpriseLikelihood) {
+		this.surpriseLikelihood = surpriseLikelihood;
+	}
+
+	public String getUnderExposedLikelihood() {
+		return underExposedLikelihood;
+	}
+
+	public void setUnderExposedLikelihood(String underExposedLikelihood) {
+		this.underExposedLikelihood = underExposedLikelihood;
+	}
+
+	public String getBlurredLikelihood() {
+		return blurredLikelihood;
+	}
+
+	public void setBlurredLikelihood(String blurredLikelihood) {
+		this.blurredLikelihood = blurredLikelihood;
+	}
+
+	public String getHeadwearLikelihood() {
+		return headwearLikelihood;
+	}
+
+	public void setHeadwearLikelihood(String headwearLikelihood) {
+		this.headwearLikelihood = headwearLikelihood;
 	}
 
 }
