@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brannan.yelp.reviews.restaurantinfo.pojos.Restaurant;
@@ -18,13 +19,9 @@ class RestaurantInfoRestProvider {
 	@Autowired
 	YelpRestClient yelpRestClient;
 
-	@GetMapping(value = "/get-restaurant/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Restaurant getRestaurantById(@PathVariable final String restaurantId) {
-
-		Restaurant restaurant = yelpRestClient.getRestaurant(restaurantId, true);
-
-		return restaurant;
-
+	@GetMapping(value = "/get-restaurant/{name}/{location}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Restaurant getRestaurantById(@PathVariable final String name, @PathVariable final String location, @RequestParam(required = false) final boolean pullReviews) {
+		return yelpRestClient.getRestaurant(name, location, pullReviews);
 	}
 
 	@GetMapping(value = "/get-reviews/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
