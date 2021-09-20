@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,7 +38,7 @@ public class YelpRestClient {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	static {
-
+		// Basic way of making sure the credentials are there
 		String key = "";
 
 		if (System.getenv(yelpApiKey) == null) {
@@ -52,18 +53,21 @@ public class YelpRestClient {
 		client = WebClient.builder().baseUrl(yelpApiStartUrl).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).defaultHeader("Authorization", "Bearer " + key).build();
 	}
 
-	public Restaurant getRestaurant(String id) {
-		return getRestaurant(id, false);
+	public Restaurant getRestaurant(String name, String location) {
+		return getRestaurant(name, location, false);
 	}
 
-	public Restaurant getRestaurant(String restaurantId, boolean pullReviews) {
-		Restaurant restaurant = new Restaurant();
-		restaurant.setId(restaurantId);
+	public Restaurant getRestaurant(String name, String location, boolean pullReviews) {
 
-		restaurant = client.get().uri(restaurantId).retrieve().bodyToMono(Restaurant.class).block();
+		// Simple search by name and location and just use the first result
+		Restaurant restaurant = searchForRestaurantByName(name, location);
+		if (restaurant == null) {
+			// Shortcut back out and let Provider show error
+			return null;
+		}
 
 		if (pullReviews) {
-			restaurant.setReviews(getReviewsByRestaurantId(restaurantId));
+			restaurant.setReviews(getReviewsByRestaurantId(restaurant.getId()));
 		}
 
 		return restaurant;
@@ -74,7 +78,7 @@ public class YelpRestClient {
 		List<Review> reviews = new ArrayList<>();
 		try {
 			// Pull review API call into a map for easier access
-			HashMap<String, Object> m = objectMapper.readValue(reviewsString, HashMap.class);
+			Map<String, Object> m = mapifyString(reviewsString); // objectMapper.readValue(reviewsString, HashMap.class);
 
 			reviews = objectMapper.convertValue(m.get("reviews"), new TypeReference<List<Review>>() {
 			});
@@ -123,6 +127,26 @@ public class YelpRestClient {
 					user.setUnderExposedLikelihood(anno.getUnderExposedLikelihood().toString());
 				}
 			}
+		}
+	}
+
+	private Restaurant searchForRestaurantByName(String name, String location) {
+		String reviewsString = client.get().uri(uriBuilder -> uriBuilder.path("search").queryParam("term", name).queryParam("location", location).build()).retrieve().bodyToMono(String.class).block();
+		Map<String, Object> map = mapifyString(reviewsString);
+		if (map == null) {
+			return null;
+		}
+
+		return objectMapper.convertValue(map.get("businesses"), new TypeReference<List<Restaurant>>() {
+		}).get(0);
+	}
+
+	private Map<String, Object> mapifyString(String json) {
+		try {
+			return objectMapper.readValue(json, HashMap.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
